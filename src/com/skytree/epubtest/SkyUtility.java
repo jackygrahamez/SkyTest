@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 
 import org.apache.http.util.ByteArrayBuffer;
 
+import com.skytree.epub.BookInformation;
 import com.skytree.epubtest.HomeActivity.ImageButtonHighlighterOnTouchListener;
 
 import android.annotation.SuppressLint;
@@ -29,6 +30,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -42,9 +44,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
 
-@SuppressLint("NewApi")
 public class SkyUtility {
 	Context context;
+	SkyDatabase sd;
+	SkyApplication app;
+	LocalService ls = null;
 	final String TAG = "EPub";
 	public SkyUtility(Context context) {
 		this.context = context;
@@ -399,6 +403,33 @@ public class SkyUtility {
 		}
 	}
 	
+	public void copyEPubDevice(String fileName) {			      
+		try
+		{
+			String path = SkySetting.getStorageDirectory()+ "/books/"+fileName;
+			File file = new File(path);
+			if (file.exists()) return;
+			InputStream localInputStream = context.getAssets().open("books/"+fileName);	        	  
+			FileOutputStream localFileOutputStream = new FileOutputStream(SkySetting.getStorageDirectory() + "/books/"+fileName);
+
+			byte[] arrayOfByte = new byte[1024];
+			int offset;
+			while ((offset = localInputStream.read(arrayOfByte))>0)
+			{
+				localFileOutputStream.write(arrayOfByte, 0, offset);	              
+			}
+			localFileOutputStream.close();
+			localInputStream.close();
+			Log.d(TAG, fileName+" copied to phone");	            
+		}
+		catch (IOException localIOException)
+		{
+			localIOException.printStackTrace();
+			Log.d(TAG, "failed to copy");
+			return;
+		}
+	}
+	
 	
 	private boolean isSetup() {
         SharedPreferences pref = this.context.getSharedPreferences("EPubTest",0);        
@@ -455,10 +486,18 @@ public class SkyUtility {
         if (!this.makeDirectory("books/fonts")) {
         	debug("faild to make fonts directory");
         }
-        
 
         SharedPreferences pref = this.context.getSharedPreferences("EPubTest",0);
         SharedPreferences.Editor edit = pref.edit();
+        copyEPubDevice("test.epub");
+        int bookCode = sd.insertEmptyBook("", "", "Alice's Adventures in Wonderland", "Lewis Carroll");
+        //String baseDirectory = SkySetting.getStorageDirectory() + "/books";
+        String baseDirectory = new String(SkySetting.getStorageDirectory() + "/books");
+        //ContentHandler contentListener = new ContentHandler();
+        //BookInformation bi = new BookInformation("test.epub", baseDirectory, contentListener);
+        //bi.bookCode = bookCode;
+        //sd.updateBook(bi);
+        //ls.reloadBookInformation(bi.bookCode);
         
         edit.putBoolean("isSetup", true);        
         edit.commit();

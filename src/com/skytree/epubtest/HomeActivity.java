@@ -439,10 +439,7 @@ public class HomeActivity extends Activity {
 		//ls.startDownload("http://skytree21.com/books/Alice.epub","http://skytree21.com/books/Alice.jpg","Alice's Adventures in Wonderland","Lewis Carroll");
 		//ls.startDownload("http://skytree21.com/books/Saadi.epub","http://skytree21.com/books/Saadi.jpg","سعدی‎","سعدی‎");
 		//ls.startDownload("http://skytree21.com/books/Doctor.epub","http://skytree21.com/books/Doctor.jpg","시골의사 박경철의 자기혁명","박경철");
-		
 	}
-	
-	
 	
 	public void searchButtonClick() {
 		this.showSearchView();
